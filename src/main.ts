@@ -1,18 +1,29 @@
-import SQLite from "better-sqlite3";
-import { Kysely, SqliteDialect } from "kysely";
-import type { DB } from "./db/types";
+import { query } from "@anthropic-ai/claude-agent-sdk";
+import { outputJsonSchema } from "./output-schema";
 
 async function main() {
-  const db = new Kysely<DB>({
-    dialect: new SqliteDialect({
-      database: new SQLite(process.env.DATABASE_URL),
-    }),
-  });
+  for await (const message of query({
+    prompt: `
+      あなたはテキストから名前と住所を抽出する API です。
+      次のテキストから名前と住所を抽出してください。
 
-  const requests = await db.selectFrom("requests").selectAll().execute();
-
-  for (const request of requests) {
-    console.log(request.prompt);
+      私の名前は山田太郎です。
+      私の住所は東京都千代田区永田町1-7-1です。
+    `,
+    options: {
+      outputFormat: {
+        type: "json_schema",
+        schema: outputJsonSchema,
+      },
+    },
+  })) {
+    if (
+      message.type === "result" &&
+      message.subtype === "success" &&
+      message.structured_output
+    ) {
+      console.log(JSON.stringify(message.structured_output, null, 2));
+    }
   }
 }
 
