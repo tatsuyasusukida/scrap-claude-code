@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx --env-file .env src/main.ts",
-    "db:push": "atlas schema apply --env local",
+    "start": "tsx --env-file .env src/main.ts",
+    "lint": "biome check .",
+    "fmt": "biome format --write .",
+    "db:push": "atlas schema apply --env local --auto-approve",
     "db:codegen": "kysely-codegen --out-file src/db/types.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

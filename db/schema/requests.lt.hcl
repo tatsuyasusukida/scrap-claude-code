@@ -13,8 +13,9 @@ table "requests" {
   }
 
   column "status" {
-    type = text
-    null = false
+    type    = text
+    null    = false
+    default = "pending"
   }
 
   column "created_at" {
